@@ -1,7 +1,7 @@
 import web
 
 db = web.database(dbn='sqlite',
-        db='AuctionBase'
+        db='AuctionBase.db'
     )
 
 ######################BEGIN HELPER METHODS######################
@@ -47,10 +47,10 @@ def query(query_string, vars={}):
 #TODO: additional methods to interact with your database,
 # e.g. to update the current time
 
-def updateTime(selected_time):
+def updateTime(new_time):
     t = db.transaction()
     try:
-        db.update('CurrentTime', where='Time', Time=selected_time)
+        db.update('CurrentTime', where='time', Time=new_time)
     except Exception as e:
         t.rollback()
         print str(e)

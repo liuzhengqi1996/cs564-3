@@ -186,7 +186,7 @@ class select_time:
         # TODO: save the selected time as the current time in the database
         flag = sqlitedb.updateTime(selected_time)
         if flag == 0:
-            error_message = 'Update time failed!'
+            error_message = 'All new bids must be placed at the time which matches the current time of your AuctionBase system.'
             return render_template('select_time.html', message=error_message)
         # Here, we assign `update_message' to `message', which means
         # we'll refer to it in our template as `message'
