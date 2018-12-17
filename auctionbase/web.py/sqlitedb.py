@@ -19,11 +19,10 @@ def transaction():
 def getTime():
     # TODO: update the query string to match
     # the correct column and table name in your database
-    query_string = 'select time from CurrentTime'
+    query_string = 'select time as time from CurrentTime'
     results = query(query_string)
     # alternatively: return results[0]['currenttime']
-    return results[0].time # TODO: update this as well to match the
-                           # column name
+    return results[0].time
 
 # returns a single item specified by the Item's ID in the database
 # Note: if the `result' list is empty (i.e. there are no items for a
@@ -95,7 +94,7 @@ def isBidActive(item_id):
             # check if current time is between the start and end time of bid
             return (start_time <= curr_time and end_time >= curr_time)
         else:
-        return False
+            return False
 
 # gets user from user id
 def getUserByUserId(user_id):
@@ -118,8 +117,7 @@ def getWinnerById(item_id):
 # searches for items in the auction
 def searchInAuction(dict = {}):
     query_string = 'select * from Items'
-    if dict['itemID'] != '' or dict['minPrice'] != '' or dict['maxPrice'] != '' 
-        or dict['status'] != 'all' or dict['category'] != '' or dict['description'] != '':
+    if dict['itemID'] != '' or dict['minPrice'] != '' or dict['maxPrice'] != '' or dict['status'] != 'all' or dict['category'] != '' or dict['description'] != '':
         query_string += ' where'
 
     # if item id is invalid

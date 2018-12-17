@@ -79,7 +79,7 @@ class add_bid:
                 update_message = 'Item is invalid'
                 return render_template('add_bid.html', add_result = result, message = update_message)
             else:
-                if sqlitedb.bidisOpen(itemID):
+                if sqlitedb.isBidActive(itemID):
                     t = sqlitedb.transaction()
                     query_string = 'INSERT INTO Bids (itemID, UserID, Amount, Time) VALUES ($itemID, $userid, $price, $time) '
                     try:
@@ -89,7 +89,7 @@ class add_bid:
                     except Exception as e:
                         t.rollback()
                         print str(e)
-                        update_message = 'An error has occurred'
+                        update_message = 'Error'
                         result = False
                         return render_template('add_bid.html', add_result = result, message = update_message)
                     else:
@@ -103,7 +103,7 @@ class add_bid:
                     return render_template('add_bid.html', add_result = result, message = update_message)
         else:
             result = False
-            update_message = 'User is invalid'
+            update_message = 'Invalid User'
             return render_template('add_bid.html', add_result = result, message = update_message)
 
 
@@ -122,7 +122,7 @@ class search:
         dict['maxPrice'] = post_params['maxPrice']
         dict['status'] = post_params['status']
 
-        result = sqlitedb.searchItems(dict)
+        result = sqlitedb.searchInAuction(dict)
         return render_template('search.html', search_result=result)
 
 
@@ -133,9 +133,9 @@ class item_info:
     def POST(self):
         post_params = web.input()
         item_id = post_params['item_id']
-        bid = sqlitedb.getBids(item_id)
+        bid = sqlitedb.getBidsById(item_id)
         item = sqlitedb.getItemById(item_id)
-        category = sqlitedb.getCategory(item_id)
+        category = sqlitedb.getCategoryById(item_id)
         time = sqlitedb.getTime()
         price = item['Buy_Price']
 
@@ -144,7 +144,7 @@ class item_info:
             open = True
         else:
             if item['Number_of_Bids'] > 0:
-                winner = sqlitedb.getWinner(item_id, item['Currently'])['UserID']
+                winner = sqlitedb.getWinnerById(item_id, item['Currently'])['UserID']
             open = False
 
         return render_template('item_info.html', bid_result = bid, item = item, categories = category, open = open,
