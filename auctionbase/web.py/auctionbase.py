@@ -92,26 +92,26 @@ class add_bid:
     def POST(self):
         current_time = sqlitedb.getTime()
         post_params = web.input()
-        item_id = post_params['itemID']
-        user_id = post_params['userID']
-        amount = float(post_params['price'])
+        itemID = post_params['itemID']
+        userID = post_params['userID']
+        price = float(post_params['price'])
         
         # if the user is valid
         if sqlitedb.getUserByUserId(userID):
             # if the item is valid
-            if sqlitedb.getItemById(item_id) is not None:
+            if sqlitedb.getItemById(itemID) is not None:
                 # if the bid is active
-                if sqlitedb.isBidActive(item_id):
+                if sqlitedb.isBidActive(itemID):
                     t = sqlitedb.transaction()
-                    query_string = 'INSERT INTO Bids (itemID, UserID, Amount, Time) VALUES ($itemID, $userId, $price, $time) '
+                    query_string = 'INSERT INTO Bids (itemID, UserID, Amount, Time) VALUES ($itemID, $userid, $price, $time) '
                     try:
-                        if item_id == '':
+                        if itemID == '':
                             return render_template('add_bid.html', message = 'no itemID')
-                        if user_id == '':
+                        if userID == '':
                             return render_template('add_bid.html', message = 'no userID')
-                        if amount == '':
+                        if price == '':
                             return render_template('add_bid.html', message = 'no amount')
-                        sqlitedb.query(query_string, {'itemID': item_id, 'userid': user_id, 'price': amount, 'time': current_time})
+                        sqlitedb.query(query_string, {'itemID': itemID, 'userid': userID, 'price': price, 'time': current_time})
                     except Exception as exception:
                         t.rollback()
                         print str(exception)
