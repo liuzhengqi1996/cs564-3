@@ -17,7 +17,7 @@ def transaction():
 
 # returns the current time from your database
 def getTime():
-	# TODO: update the query string to match
+    # TODO: update the query string to match
     # the correct column and table name in your database
     query_string = 'select time from CurrentTime'
     results = query(query_string)
@@ -80,21 +80,22 @@ def getBidsById(item_id):
 # check if a bid is active
 def isBidActive(item_id):
     item = getItemById(item_id)
-	curr_time = getTime()
-	# bid is invalid if there is no item
-	if item == None: 
-		return False
-	else:
-		start_time = item.Started
+    curr_time = getTime()
+    # bid is invalid if there is no item
+    if item == None: 
+        return False
+    else:
+        start_time = item.Started
         end_time = item.Ends
         buy_price = item.Buy_Price
         curr_price = item.Currently
-		# check if the buy price is higher than current bid price
-		if buy_price > curr_price:
-			# check if current time is between the start and end time of bid
-			return (start_time <= curr_time and end_time >= curr_time)
-		else:
-			return False
+        
+        # check if the buy price is higher than current bid price
+        if buy_price > curr_price:
+            # check if current time is between the start and end time of bid
+            return (start_time <= curr_time and end_time >= curr_time)
+        else:
+        return False
 
 # gets user from user id
 def getUserByUserId(user_id):
@@ -116,67 +117,67 @@ def getWinnerById(item_id):
 
 # searches for items in the auction
 def searchInAuction(dict = {}):
-	query_string = 'select * from Items'
-	if dict['itemID'] != '' or dict['minPrice'] != '' or dict['maxPrice'] != '' 
-		or dict['status'] != 'all' or dict['category'] != '' or dict['description'] != '':
-		query_string += ' where'
-	
-	# if item id is invalid
-	if dict['itemID'] == '':
-		# if min price is valid
-		if dict['minPrice'] != '':
-			min_price = dict['minPrice']
-			# add min price info
-			query_string += ' Currently >= minPrice, ' + min_price
-			if dict['maxPrice'] != '':
-				query_string += ' and'
-		# if max price is valid
-		if dict['maxPrice'] != '':
-			max_price = dict['maxPrice']
-			# add max price info
-			query_string += ' Currently <= maxPrice, ' + max_price
-	
-	# if item id is valid
-	if dict['itemID'] != '':
-		item_id = dict['itemID']
+    query_string = 'select * from Items'
+    if dict['itemID'] != '' or dict['minPrice'] != '' or dict['maxPrice'] != '' 
+        or dict['status'] != 'all' or dict['category'] != '' or dict['description'] != '':
+        query_string += ' where'
+
+    # if item id is invalid
+    if dict['itemID'] == '':
+        # if min price is valid
+        if dict['minPrice'] != '':
+            min_price = dict['minPrice']
+            # add min price info
+            query_string += ' Currently >= minPrice, ' + min_price
+            if dict['maxPrice'] != '':
+                query_string += ' and'
+        # if max price is valid
+        if dict['maxPrice'] != '':
+            max_price = dict['maxPrice']
+            # add max price info
+            query_string += ' Currently <= maxPrice, ' + max_price
+
+    # if item id is valid
+    if dict['itemID'] != '':
+        item_id = dict['itemID']
         query_string += ' ItemID = ' + item_id
-		# if min price is valid
-		if dict['minPrice'] != '':
-			min_price = dict['minPrice']
-			# add min price info
-			query_string += ' and Currently >= minPrice, ' + min_price
-		# if max price is valid
-		if dict['maxPrice'] != '':
-			max_price = dict['maxPrice']
-			# add max price info
-			query_string += ' and Currently <= maxPrice, ' + max_price
-	
-	# if status is valid
-	if dict['status'] != 'all':
-		if dict['itemID'] != '' or dict['minPrice'] != '' or dict['maxPrice'] != '':
-			query_string += ' and'
-		# add status info
-		if dict['status'] == 'open':
-			query_string += ' Items.Started <= (select time from CurrentTime) and Items.Ends > (select time from CurrentTime)'
-		if dict['status'] == 'close':
-			query_string += ' Items.Ends < (select time from CurrentTime)'
-		if dict['status'] == 'notStarted':
-			query_string += ' Items.Started > (select time from CurrentTime)'
-	
-	# if category is valid
-	if dict['category'] != '':
-		if dict['itemID'] != '' or dict['minPrice'] != '' or dict['maxPrice'] != '' or dict['status'] != 'all':
-			query_string += ' and'
-		# add category info
-		category = dict['category']
-		query_string += ' ItemID in (select ItemID from Categories where Category = \'' + category + '\')'
-	
-	# if description is valid
-	if dict['description'] != '':
-		if dict['itemID'] != '' or dict['minPrice'] != '' or dict['maxPrice'] != '' or dict['status'] != 'all' or dict['category'] != '':
-			query_string += ' and'
-		# add description info
-		description = dict['description']
-		query_string += ' Description like \'' + description + '\''
-	
+        # if min price is valid
+        if dict['minPrice'] != '':
+            min_price = dict['minPrice']
+            # add min price info
+            query_string += ' and Currently >= minPrice, ' + min_price
+        # if max price is valid
+        if dict['maxPrice'] != '':
+            max_price = dict['maxPrice']
+            # add max price info
+            query_string += ' and Currently <= maxPrice, ' + max_price
+
+    # if status is valid
+    if dict['status'] != 'all':
+        if dict['itemID'] != '' or dict['minPrice'] != '' or dict['maxPrice'] != '':
+            query_string += ' and'
+        # add status info
+        if dict['status'] == 'open':
+            query_string += ' Items.Started <= (select time from CurrentTime) and Items.Ends > (select time from CurrentTime)'
+        if dict['status'] == 'close':
+            query_string += ' Items.Ends < (select time from CurrentTime)'
+        if dict['status'] == 'notStarted':
+            query_string += ' Items.Started > (select time from CurrentTime)'
+
+    # if category is valid
+    if dict['category'] != '':
+        if dict['itemID'] != '' or dict['minPrice'] != '' or dict['maxPrice'] != '' or dict['status'] != 'all':
+            query_string += ' and'
+        # add category info
+        category = dict['category']
+        query_string += ' ItemID in (select ItemID from Categories where Category = \'' + category + '\')'
+
+    # if description is valid
+    if dict['description'] != '':
+        if dict['itemID'] != '' or dict['minPrice'] != '' or dict['maxPrice'] != '' or dict['status'] != 'all' or dict['category'] != '':
+            query_string += ' and'
+        # add description info
+        description = dict['description']
+        query_string += ' Description like \'' + description + '\''
+
     return query(query_string)
