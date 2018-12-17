@@ -126,14 +126,14 @@ def searchInAuction(dict = {}):
         if dict['minPrice'] != '':
             min_price = dict['minPrice']
             # add min price info
-            query_string += ' Currently >= minPrice, ' + min_price
+            query_string += ' Currently >= ' + min_price
             if dict['maxPrice'] != '':
                 query_string += ' and'
         # if max price is valid
         if dict['maxPrice'] != '':
             max_price = dict['maxPrice']
             # add max price info
-            query_string += ' Currently <= maxPrice, ' + max_price
+            query_string += ' Currently <= ' + max_price
 
     # if item id is valid
     if dict['itemID'] != '':
@@ -143,12 +143,12 @@ def searchInAuction(dict = {}):
         if dict['minPrice'] != '':
             min_price = dict['minPrice']
             # add min price info
-            query_string += ' and Currently >= minPrice, ' + min_price
+            query_string += ' and Currently >= ' + min_price
         # if max price is valid
         if dict['maxPrice'] != '':
             max_price = dict['maxPrice']
             # add max price info
-            query_string += ' and Currently <= maxPrice, ' + max_price
+            query_string += ' and Currently <= ' + max_price
 
     # if status is valid
     if dict['status'] != 'all':
