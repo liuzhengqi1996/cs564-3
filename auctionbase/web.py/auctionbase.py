@@ -62,6 +62,24 @@ class front_page:
     def GET(self):
         return render_template('app_base.html')
 
+class search:
+    def GET(self):
+        return render_template('search.html')
+    
+    def POST(self):
+        post_params = web.input()
+        
+        dict = {}
+        dict['itemID'] = post_params['itemID']
+        dict['category'] = post_params['category']
+        dict['description'] = post_params['description']
+        dict['minPrice'] = post_params['minPrice']
+        dict['maxPrice'] = post_params['maxPrice']
+        dict['status'] = post_params['status']
+        
+        result = sqlitedb.searchInAuction(dict)
+        return render_template('search.html', search_result=result)
+
 class add_bid:
     def GET(self):
         return render_template('add_bid.html')
@@ -107,23 +125,7 @@ class add_bid:
             return render_template('add_bid.html', add_result = result, message = update_message)
 
 
-class search:
-    def GET(self):
-        return render_template('search.html')
 
-    def POST(self):
-        post_params = web.input()
-
-        dict = {}
-        dict['itemID'] = post_params['itemID']
-        dict['category'] = post_params['category']
-        dict['description'] = post_params['description']
-        dict['minPrice'] = post_params['minPrice']
-        dict['maxPrice'] = post_params['maxPrice']
-        dict['status'] = post_params['status']
-
-        result = sqlitedb.searchInAuction(dict)
-        return render_template('search.html', search_result=result)
 
 
 class item_info:
