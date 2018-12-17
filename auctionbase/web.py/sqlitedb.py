@@ -39,7 +39,7 @@ def getItemById(item_id):
 
 # wrapper method around web.py's db.query method
 # check out http://webpy.org/cookbook/query for more info
-def query(query_string, vars={}):
+def query(query_string, vars = {}):
     return list(db.query(query_string, vars))
 
 #####################END HELPER METHODS#####################
@@ -50,7 +50,7 @@ def query(query_string, vars={}):
 def updateTime(new_time):
     t = db.transaction()
     try:
-        db.update('CurrentTime', where='time', Time=new_time)
+        db.update('CurrentTime', where = 'time', Time = new_time)
     except Exception as e:
         t.rollback()
         print str(e)
@@ -62,51 +62,51 @@ def updateTime(new_time):
 def searchItems(dict={}):
     # define the existence of various values
     status_flag = False
-    item_falg = False
-    category_falg = False
-    minprice_falg = False
-    maxprice_falg = False
-    description_falg = False
+    item_flag = False
+    category_flag = False
+    minprice_flag = False
+    maxprice_flag = False
+    description_flag = False
     if dict['itemID'] != '':
-        item_falg = True
+        item_flag = True
     if dict['category'] != '':
-        category_falg = True
+        category_flag = True
     if dict['maxPrice'] != '':
-        maxprice_falg = True
+        maxprice_flag = True
     if dict['minPrice'] != '':
-        minprice_falg = True
+        minprice_flag = True
     if dict['description'] != '':
-        description_falg = True
+        description_flag = True
 
     # initialize query string
     query_string = 'SELECT * FROM Items'
-    if item_falg or category_falg or minprice_falg or maxprice_falg or description_falg or dict['status'] != 'all':
+    if item_flag or category_flag or minprice_flag or maxprice_flag or description_flag or dict['status'] != 'all':
         query_string = 'SELECT * FROM Items WHERE'
 
     # check for item
-    if item_falg:
+    if item_flag:
         item_id = dict['itemID']
         query_string += ' ItemID = ' + item_id
-        if minprice_falg or maxprice_falg:
+        if minprice_flag or maxprice_flag:
             min_price = dict['minPrice']
             query_string += ' AND Currently >= ' + min_price
-        if maxprice_falg:
+        if maxprice_flag:
             max_price = dict['maxPrice']
             query_string += ' AND Currently <= ' + max_price
     else:
-        if minprice_falg:
+        if minprice_flag:
             min_price = dict['minPrice']
             query_string += ' Currently >= ' + min_price
-            if maxprice_falg:
+            if maxprice_flag:
                 query_string += 'AND'
-        if maxprice_falg:
+        if maxprice_flag:
             max_price = dict['maxPrice']
             query_string += ' Currently <= ' + max_price
 
     # check for status
     if dict['status'] != 'all':
         status_flag = True
-        if maxprice_falg or minprice_falg or item_falg:
+        if maxprice_flag or minprice_flag or item_flag:
             if dict['status'] == 'open':
                 query_string += ' AND Started <= (SELECT Time FROM CurrentTime) AND Ends >= (SELECT Time FROM CurrentTime) '
             if dict['status'] == 'close':
@@ -123,15 +123,15 @@ def searchItems(dict={}):
 
 
     # check for category
-    if category_falg:
-        if item_falg or minprice_falg or maxprice_falg or status_flag:
+    if category_flag:
+        if item_flag or minprice_flag or maxprice_flag or status_flag:
             query_string += ' AND ItemID in (SELECT ItemID FROM Categories WHERE Category = \'%s\') ' % (dict['category'])
         else:
             query_string += ' ItemID in (SELECT ItemID FROM Categories WHERE Category = \'%s\') ' % (dict['category'])
 
     # check for description
-    if description_falg:
-        if item_falg or minprice_falg or maxprice_falg or status_flag or category_falg:
+    if description_flag:
+        if item_flag or minprice_flag or maxprice_flag or status_flag or category_flag:
             query_string += ' AND Description LIKE \'%%%s%%\' ' % (dict['description'])
         else:
             query_string += ' Description LIKE \'%%%s%%\' ' % (dict['description'])
@@ -151,28 +151,28 @@ def bidisOpen(item_id):
         return False
 
 def getUser(user_id):
-        query_string = 'select * from Users where UserID = $user_id'
-        result = query(query_string, {'user_id': user_id})
-        try:
-            return result[0]
-        except Exception as e:
-            return False
+    query_string = 'select * from Users where UserID = $user_id'
+    result = query(query_string, {'user_id': user_id})
+    try:
+        return result[0]
+    except Exception as e:
+        return False
 
 def getCategory(item_id):
-        query_string = 'select Category from Categories where ItemID = $item_id'
-        result = query(query_string, {'itemID': item_id})
-        try:
-            return result
-        except Exception as e:
-            return None
+    query_string = 'select Category from Categories where ItemID = $item_id'
+    result = query(query_string, {'itemID': item_id})
+    try:
+        return result
+    except Exception as e:
+        return None
 
 def getBids(item_id):
-        query_string = 'select * from Bids where ItemID = $item_id'
-        result = query(query_string, {'itemID': item_id})
-        try:
-            return result
-        except Exception as e:
-            return None
+    query_string = 'select * from Bids where ItemID = $item_id'
+    result = query(query_string, {'itemID': item_id})
+    try:
+        return result
+    except Exception as e:
+        return None
 
 def getWinner(item_id):
     query_string = 'select UserID from Bids where ItemID = $item_id'
