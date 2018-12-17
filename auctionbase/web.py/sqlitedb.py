@@ -152,7 +152,7 @@ def searchInAuction(dict = {}):
 			query_string += ' and Currently <= maxPrice, ' + max_price
 	
 	# if status is valid
-    if dict['status'] != 'all':
+	if dict['status'] != 'all':
 		if dict['itemID'] != '' or dict['minPrice'] != '' or dict['maxPrice'] != '':
 			query_string += ' and'
 		# add status info
@@ -164,7 +164,7 @@ def searchInAuction(dict = {}):
 			query_string += ' Items.Started > (select time from CurrentTime)'
 	
 	# if category is valid
-    if dict['category'] != '':
+	if dict['category'] != '':
 		if dict['itemID'] != '' or dict['minPrice'] != '' or dict['maxPrice'] != '' or dict['status'] != 'all':
 			query_string += ' and'
 		# add category info
@@ -172,7 +172,7 @@ def searchInAuction(dict = {}):
 		query_string += ' ItemID in (select ItemID from Categories where Category = \'' + category + '\')'
 	
 	# if description is valid
-    if dict['description'] != '':
+	if dict['description'] != '':
 		if dict['itemID'] != '' or dict['minPrice'] != '' or dict['maxPrice'] != '' or dict['status'] != 'all' or dict['category'] != '':
 			query_string += ' and'
 		# add description info
