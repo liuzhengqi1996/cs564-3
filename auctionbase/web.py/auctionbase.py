@@ -91,7 +91,7 @@ class add_bid:
         userID = post_params['userID']
         price = float(post_params['price'])
 
-        if sqlitedb.getUser(userID):
+        if sqlitedb.getUserByUserId(userID):
             if sqlitedb.getItemById(itemID) is None:
                 result = False
                 update_message = 'Item is invalid'
