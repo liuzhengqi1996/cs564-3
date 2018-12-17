@@ -52,86 +52,99 @@ def render_template(template_name, **context):
 
 urls = ('/currtime', 'curr_time',
         '/selecttime', 'select_time',
-		'/', 'front_page',
-        '/add_bid', 'add_bid',
+		'/', 'page',
+        '/addbid', 'add_bid',
         '/search', 'search',
-        '/item_info', 'item_info'
+        '/iteminfo', 'item_info'
         )
 
-class front_page:
+class page:
+    # A simple GET request
     def GET(self):
-        return render_template('app_base.html')
+        return render_template('page.html')
 
 class search:
+    # A GET request, to '/search'
     def GET(self):
         return render_template('search.html')
     
+    # A POST request
     def POST(self):
         post_params = web.input()
         
         dict = {}
         dict['itemID'] = post_params['itemID']
-        dict['category'] = post_params['category']
-        dict['description'] = post_params['description']
         dict['minPrice'] = post_params['minPrice']
         dict['maxPrice'] = post_params['maxPrice']
         dict['status'] = post_params['status']
-        
+        dict['category'] = post_params['category']
+        dict['description'] = post_params['description']
         result = sqlitedb.searchInAuction(dict)
-        return render_template('search.html', search_result=result)
+        
+        return render_template('search.html', search_result = result)
 
 class add_bid:
+    # A GET request, to '/addbid'
     def GET(self):
         return render_template('add_bid.html')
 
+    # A POST request
     def POST(self):
         current_time = sqlitedb.getTime()
         post_params = web.input()
-        itemID = post_params['itemID']
-        userID = post_params['userID']
-        price = float(post_params['price'])
-
+        item_id = post_params['itemID']
+        user_id = post_params['userID']
+        amount = float(post_params['price'])
+        
+        # if the user is valid
         if sqlitedb.getUserByUserId(userID):
-            if sqlitedb.getItemById(itemID) is None:
-                result = False
-                update_message = 'Item is invalid'
-                return render_template('add_bid.html', add_result = result, message = update_message)
-            else:
-                if sqlitedb.isBidActive(itemID):
+            # if the item is valid
+            if sqlitedb.getItemById(item_id) is not None:
+                # if the bid is active
+                if sqlitedb.isBidActive(item_id):
                     t = sqlitedb.transaction()
-                    query_string = 'INSERT INTO Bids (itemID, UserID, Amount, Time) VALUES ($itemID, $userid, $price, $time) '
+                    query_string = 'INSERT INTO Bids (itemID, UserID, Amount, Time) VALUES ($itemID, $userId, $price, $time) '
                     try:
-                        if user_id == '' or item_id == '' or amount == '':
-                            return render_template('add_bid.html', message = 'empty fields')
-                        sqlitedb.query(query_string, {'itemID': itemID, 'userid': userID, 'price': price, 'time': current_time})
-                    except Exception as e:
+                        if item_id == '':
+                            return render_template('add_bid.html', message = 'no itemID')
+                        if user_id == '':
+                            return render_template('add_bid.html', message = 'no userID')
+                        if amount == '':
+                            return render_template('add_bid.html', message = 'no amount')
+                        sqlitedb.query(query_string, {'itemID': item_id, 'userid': user_id, 'price': amount, 'time': current_time})
+                    except Exception as exception:
                         t.rollback()
-                        print str(e)
-                        update_message = 'Error'
+                        print str(exception)
                         result = False
+                        update_message = 'Error when add a bid'
                         return render_template('add_bid.html', add_result = result, message = update_message)
                     else:
                         t.commit()
-                        update_message = 'Add bid successfully!'
                         result = True
+                        update_message = 'Successfully add a bid'
                         return render_template('add_bid.html', add_result = result, message = update_message)
+                # if the bid is not active
                 else:
-                    update_message = 'Bid is closed'
                     result = False
+                    update_message = 'The bid is closed now'
                     return render_template('add_bid.html', add_result = result, message = update_message)
+            # if the item can't be found
+            else:
+                result = False
+                update_message = 'Cannot get the item with item id'
+                return render_template('add_bid.html', add_result = result, message = update_message)
+        # if the user can't be found
         else:
             result = False
-            update_message = 'Invalid User'
+            update_message = 'Cannot get the user with user id'
             return render_template('add_bid.html', add_result = result, message = update_message)
 
-
-
-
-
 class item_info:
+    # A GET request, to '/iteminfo'
     def GET(self):
         return render_template('item_info.html')
 
+    # A POST request
     def POST(self):
         post_params = web.input()
         item_id = post_params['item_id']
@@ -139,19 +152,21 @@ class item_info:
         item = sqlitedb.getItemById(item_id)
         category = sqlitedb.getCategoryById(item_id)
         time = sqlitedb.getTime()
-        price = item['Buy_Price']
-
+        buy_price = item['Buy_Price']
         winner = None
-        if item['Ends'] > time and item['Currently'] < price:
+        
+        # the bid is open before the end time and when current bid price is lower than buy price
+        if time < item['Ends'] and item['Currently'] < buy_price:
+            open = True
+        # the bid is open when there is no bid
+        elif item['Number_of_Bids'] <= 0:
             open = True
         else:
-            if item['Number_of_Bids'] > 0:
-                winner = sqlitedb.getWinnerById(item_id, item['Currently'])['UserID']
+            # get the winner of the item
+            winner = sqlitedb.getWinnerById(item_id, item['Currently'])['UserID']
             open = False
 
-        return render_template('item_info.html', bid_result = bid, item = item, categories = category, open = open,
-			winner = winner)
-
+        return render_template('item_info.html', bid_result = bid, item = item, categories = category, open = open, winner = winner)
 
 class curr_time:
     # A simple GET request, to '/currtime'
