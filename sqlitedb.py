@@ -169,7 +169,7 @@ def searchInAuction(dict = {}):
 			query_string += ' and'
 		# add category info
 		category = dict['category']
-		query_string += ' ItemID in (select ItemID from Categories where Category = ' + category + ')'
+		query_string += ' ItemID in (select ItemID from Categories where Category = \'' + category + '\')'
 	
 	# if description is valid
     if dict['description'] != '':
@@ -177,6 +177,6 @@ def searchInAuction(dict = {}):
 			query_string += ' and'
 		# add description info
 		description = dict['description']
-		query_string += ' Description like ' + description
+		query_string += ' Description like \'' + description + '\''
 	
     return query(query_string)
