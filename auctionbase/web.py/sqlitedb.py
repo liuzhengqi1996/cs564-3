@@ -60,7 +60,7 @@ def updateTime(new_time):
         return 1
 
 def searchItems(dict={}):
-    #define the existence of various values
+    # define the existence of various values
     status_flag = False
     item_falg = False
     category_falg = False
@@ -78,12 +78,12 @@ def searchItems(dict={}):
     if dict['description'] != '':
         description_falg = True
 
-    #initialize query string
+    # initialize query string
     query_string = 'SELECT * FROM Items'
     if item_falg or category_falg or minprice_falg or maxprice_falg or description_falg or dict['status'] != 'all':
         query_string = 'SELECT * FROM Items WHERE'
 
-    #check for item
+    # check for item
     if item_falg:
         item_id = dict['itemID']
         query_string += ' ItemID = ' + item_id
@@ -103,7 +103,7 @@ def searchItems(dict={}):
             max_price = dict['maxPrice']
             query_string += ' Currently <= ' + max_price
 
-    #check for status
+    # check for status
     if dict['status'] != 'all':
         status_flag = True
         if maxprice_falg or minprice_falg or item_falg:
@@ -122,14 +122,14 @@ def searchItems(dict={}):
                 query_string += ' Started > (SELECT Time FROM CurrentTime) '
 
 
-    #check for category
+    # check for category
     if category_falg:
         if item_falg or minprice_falg or maxprice_falg or status_flag:
             query_string += ' AND ItemID in (SELECT ItemID FROM Categories WHERE Category = \'%s\') ' % (dict['category'])
         else:
             query_string += ' ItemID in (SELECT ItemID FROM Categories WHERE Category = \'%s\') ' % (dict['category'])
 
-    #check for description
+    # check for description
     if description_falg:
         if item_falg or minprice_falg or maxprice_falg or status_flag or category_falg:
             query_string += ' AND Description LIKE \'%%%s%%\' ' % (dict['description'])

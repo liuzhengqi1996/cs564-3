@@ -52,10 +52,10 @@ def render_template(template_name, **context):
 
 urls = ('/currtime', 'curr_time',
         '/selecttime', 'select_time',
+		'/', 'front_page',
         '/add_bid', 'add_bid',
-        '/', 'front_page',
         '/search', 'search',
-        '/auction_detail', 'auction_detail'
+        '/item_info', 'item_info'
         )
 
 class front_page:
@@ -77,34 +77,34 @@ class add_bid:
             if sqlitedb.getItemById(itemID) is None:
                 result = False
                 update_message = 'Item is invalid'
-                return render_template('add_bid.html', add_result=result, message=update_message)
+                return render_template('add_bid.html', add_result = result, message = update_message)
             else:
                 if sqlitedb.bidisOpen(itemID):
                     t = sqlitedb.transaction()
                     query_string = 'INSERT INTO Bids (itemID, UserID, Amount, Time) VALUES ($itemID, $userid, $price, $time) '
                     try:
                         if user_id == '' or item_id == '' or amount == '':
-                            return render_template('add_bid.html', message='empty fields')
+                            return render_template('add_bid.html', message = 'empty fields')
                         sqlitedb.query(query_string, {'itemID': itemID, 'userid': userID, 'price': price, 'time': current_time})
                     except Exception as e:
                         t.rollback()
                         print str(e)
                         update_message = 'An error has occurred'
                         result = False
-                        return render_template('add_bid.html', add_result=result, message=update_message)
+                        return render_template('add_bid.html', add_result = result, message = update_message)
                     else:
                         t.commit()
                         update_message = 'Add bid successfully!'
                         result = True
-                        return render_template('add_bid.html', add_result=result, message=update_message)
+                        return render_template('add_bid.html', add_result = result, message = update_message)
                 else:
                     update_message = 'Bid is closed'
                     result = False
-                    return render_template('add_bid.html', add_result=result, message=update_message)
+                    return render_template('add_bid.html', add_result = result, message = update_message)
         else:
             result = False
             update_message = 'User is invalid'
-            return render_template('add_bid.html', add_result=result, message=update_message)
+            return render_template('add_bid.html', add_result = result, message = update_message)
 
 
 class search:
@@ -126,9 +126,9 @@ class search:
         return render_template('search.html', search_result=result)
 
 
-class auction_detail:
+class item_info:
     def GET(self):
-        return render_template('auction_detail.html')
+        return render_template('item_info.html')
 
     def POST(self):
         post_params = web.input()
@@ -147,8 +147,8 @@ class auction_detail:
                 winner = sqlitedb.getWinner(item_id, item['Currently'])['UserID']
             open = False
 
-        return render_template('auction_detail.html', bid_result=bid, item=item, categories=category, open=open,
-                               winner=winner)
+        return render_template('item_info.html', bid_result = bid, item = item, categories = category, open = open,
+			winner = winner)
 
 
 class curr_time:
@@ -158,7 +158,7 @@ class curr_time:
     # in order to have its value displayed on the web page
     def GET(self):
         current_time = sqlitedb.getTime()
-        return render_template('curr_time.html', time=current_time)
+        return render_template('curr_time.html', time = current_time)
 
 
 class select_time:
@@ -187,11 +187,11 @@ class select_time:
         flag = sqlitedb.updateTime(selected_time)
         if flag == 0:
             error_message = 'All new bids must be placed at the time which matches the current time of your AuctionBase system.'
-            return render_template('select_time.html', message=error_message)
+            return render_template('select_time.html', message = error_message)
         # Here, we assign `update_message' to `message', which means
         # we'll refer to it in our template as `message'
         else:
-            return render_template('select_time.html', message=update_message)
+            return render_template('select_time.html', message = update_message)
 
 ###########################################################################################
 ##########################DO NOT CHANGE ANYTHING BELOW THIS LINE!##########################
