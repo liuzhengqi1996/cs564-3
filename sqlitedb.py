@@ -157,11 +157,11 @@ def searchInAuction(dict = {}):
 			query_string += ' and'
 		# add status info
 		if dict['status'] == 'open':
-			query_string += ' Started <= (select time from CurrentTime) and Ends > (select time from CurrentTime)'
+			query_string += ' Items.Started <= (select time from CurrentTime) and Items.Ends > (select time from CurrentTime)'
 		if dict['status'] == 'close':
-			query_string += ' Ends < (select time from CurrentTime)'
+			query_string += ' Items.Ends < (select time from CurrentTime)'
 		if dict['status'] == 'notStarted':
-			query_string += ' Started > (select time from CurrentTime)'
+			query_string += ' Items.Started > (select time from CurrentTime)'
 	
 	# if category is valid
     if dict['category'] != '':
